@@ -14,3 +14,4 @@ env/
 
 # Env/secrets
 .env
+.DS_Store
