@@ -1,0 +1,615 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Ismara — Discover the Meaning of Your Name</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --gold: #5ee0d2;
+    --gold-soft: #a0f2e8;
+    --indigo: #0a3a44;
+    --plum: #0d5a64;
+    --maroon: #0d5a64;
+    --rose: #38b2c8;
+    --amber: #38b2c8;
+    --cream: #f0fdfa;
+    --glass: rgba(255,255,255,0.08);
+    --glass-border: rgba(255,255,255,0.18);
+    --bg-a: #0a3a44;
+    --bg-b: #0d5a64;
+    --bg-c: #38b2c8;
+    --bg-d: #061c22;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Poppins', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    color: var(--cream);
+    overflow-x: hidden;
+    position: relative;
+    background: radial-gradient(circle at 15% 15%, var(--bg-b) 0%, transparent 45%),
+                radial-gradient(circle at 85% 10%, var(--bg-c) 0%, transparent 40%),
+                radial-gradient(circle at 50% 95%, var(--bg-c) 0%, transparent 35%),
+                linear-gradient(160deg, var(--bg-d), var(--bg-a) 45%, var(--bg-d) 100%);
+    background-size: 200% 200%;
+    animation: bgShift 18s ease-in-out infinite alternate;
+    transition: background 0.6s ease;
+  }
+  @keyframes bgShift {
+    0%   { background-position: 0% 0%; }
+    100% { background-position: 100% 100%; }
+  }
+
+  /* Floating decorative particles */
+  .particle {
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(1px);
+    opacity: 0.5;
+    pointer-events: none;
+    animation: float 12s ease-in-out infinite;
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0) translateX(0); }
+    50% { transform: translateY(-40px) translateX(20px); }
+  }
+
+  .container {
+    max-width: 480px;
+    width: 100%;
+    text-align: center;
+    position: relative;
+    z-index: 2;
+  }
+
+  .badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: linear-gradient(90deg, var(--rose), var(--maroon));
+    padding: 6px 16px;
+    border-radius: 999px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    margin-bottom: 18px;
+    box-shadow: 0 4px 18px rgba(214, 92, 108, 0.4);
+    animation: pulseBadge 2.4s ease-in-out infinite;
+  }
+  @keyframes pulseBadge {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+  }
+
+  h1 {
+    font-size: 2.4rem;
+    font-weight: 800;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+    background: linear-gradient(90deg, var(--gold-soft), var(--gold), var(--amber));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    text-shadow: 0 0 30px rgba(232, 189, 84, 0.3);
+  }
+
+  .subtitle {
+    font-size: 0.95rem;
+    opacity: 0.85;
+    margin-bottom: 30px;
+    font-weight: 400;
+  }
+
+  .search-card {
+    background: var(--glass);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    padding: 20px;
+    backdrop-filter: blur(14px);
+    box-shadow: 0 10px 40px rgba(0,0,0,0.35);
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 5;
+  }
+
+  .search-box {
+    display: flex;
+    gap: 10px;
+    position: relative;
+  }
+
+  input[type="text"] {
+    flex: 1;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 2px solid transparent;
+    background: rgba(255,255,255,0.1);
+    color: var(--cream);
+    font-size: 1.05rem;
+    font-family: inherit;
+    outline: none;
+    transition: border-color 0.2s ease, background 0.2s ease;
+  }
+  input[type="text"]:focus {
+    border-color: var(--gold);
+    background: rgba(255,255,255,0.15);
+  }
+  input[type="text"]::placeholder { color: rgba(255,250,240,0.45); }
+
+  button {
+    padding: 16px 24px;
+    border-radius: 14px;
+    border: none;
+    background: linear-gradient(135deg, var(--gold), var(--amber));
+    color: #2a1500;
+    font-weight: 700;
+    font-size: 1rem;
+    font-family: inherit;
+    cursor: pointer;
+    transition: transform 0.15s ease, box-shadow 0.15s ease;
+    box-shadow: 0 6px 20px rgba(232, 189, 84, 0.35);
+    white-space: nowrap;
+  }
+  button:hover:not(:disabled) {
+    transform: translateY(-2px) scale(1.02);
+    box-shadow: 0 10px 26px rgba(232, 189, 84, 0.5);
+  }
+  button:active:not(:disabled) { transform: translateY(0) scale(0.98); }
+  button:disabled { opacity: 0.5; cursor: default; }
+
+  /* Autocomplete dropdown */
+  .suggestions {
+    position: absolute;
+    top: calc(100% + 8px);
+    left: 0;
+    right: 0;
+    background: rgba(33, 18, 58, 0.97);
+    border: 1px solid var(--glass-border);
+    border-radius: 14px;
+    overflow: hidden;
+    z-index: 10;
+    box-shadow: 0 12px 30px rgba(0,0,0,0.5);
+    display: none;
+    text-align: left;
+  }
+  .suggestions.show { display: block; }
+  .suggestion-item {
+    padding: 12px 18px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    transition: background 0.15s ease;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .suggestion-item:last-child { border-bottom: none; }
+  .suggestion-item:hover, .suggestion-item.active {
+    background: linear-gradient(90deg, rgba(232,189,84,0.2), rgba(214,92,108,0.15));
+    color: var(--gold-soft);
+  }
+
+  .stats-row {
+    display: flex;
+    justify-content: center;
+    gap: 22px;
+    margin-top: 16px;
+    font-size: 0.8rem;
+    opacity: 0.75;
+  }
+  .stats-row span { display: flex; align-items: center; gap: 4px; }
+
+  /* Theme selector */
+  .theme-picker {
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .theme-picker-label {
+    font-size: 0.8rem;
+    opacity: 0.75;
+    margin-bottom: 10px;
+    text-align: left;
+    padding-left: 4px;
+  }
+  .theme-swatches {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    padding: 4px 2px 8px;
+  }
+  .theme-swatch {
+    flex: 0 0 auto;
+    width: 52px;
+    height: 52px;
+    border-radius: 14px;
+    cursor: pointer;
+    border: 2px solid transparent;
+    position: relative;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+    overflow: hidden;
+  }
+  .theme-swatch:hover { transform: translateY(-3px) scale(1.05); }
+  .theme-swatch.active {
+    border-color: var(--gold);
+    box-shadow: 0 0 0 3px rgba(255,255,255,0.15), 0 6px 16px rgba(0,0,0,0.4);
+  }
+  .theme-swatch.active::after {
+    content: "✓";
+    position: absolute;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    color: #fff;
+    font-weight: 800;
+    font-size: 1.1rem;
+    text-shadow: 0 1px 3px rgba(0,0,0,0.6);
+  }
+
+  #status {
+    min-height: 22px;
+    font-size: 0.9rem;
+    margin-bottom: 16px;
+    opacity: 0.95;
+  }
+  .suggestion-hint { color: var(--gold); font-weight: 600; }
+
+  .card-wrap {
+    position: relative;
+    display: none;
+    margin-bottom: 20px;
+  }
+  .card-wrap.show { display: block; animation: cardIn 0.5s ease; }
+  @keyframes cardIn {
+    from { opacity: 0; transform: translateY(16px) scale(0.97); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+  }
+
+  #card-preview {
+    width: 100%;
+    border-radius: 20px;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.55), 0 0 0 1px rgba(232,189,84,0.3);
+    display: block;
+  }
+
+  .actions { display: none; gap: 12px; justify-content: center; }
+  .actions.show { display: flex; animation: cardIn 0.5s ease; }
+  .actions button { flex: 1; }
+  .actions .download-btn {
+    background: linear-gradient(135deg, var(--maroon), var(--rose));
+    color: var(--cream);
+    box-shadow: 0 6px 20px rgba(92, 31, 58, 0.4);
+  }
+  .actions .share-btn {
+    background: linear-gradient(135deg, var(--plum), var(--rose));
+    color: var(--cream);
+    box-shadow: 0 6px 20px rgba(214, 92, 108, 0.4);
+  }
+
+  .spinner-wrap {
+    display: none;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin: 20px auto;
+    font-size: 0.9rem;
+    opacity: 0.85;
+  }
+  .spinner-wrap.show { display: flex; }
+  .spinner {
+    width: 30px; height: 30px;
+    border: 4px solid rgba(232,189,84,0.25);
+    border-top-color: var(--gold);
+    border-radius: 50%;
+    animation: spin 0.8s linear infinite;
+  }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  footer {
+    margin-top: 30px;
+    font-size: 0.75rem;
+    opacity: 0.55;
+  }
+
+  @media (max-width: 420px) {
+    h1 { font-size: 1.9rem; }
+    .search-box { flex-direction: column; }
+  }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="badge" id="statsBadge">✨ Loading names...</div>
+    <h1>✦ ISMARA ✦</h1>
+    <p class="subtitle">Discover the meaning, history & legacy behind your name</p>
+
+    <div class="search-card">
+      <div class="search-box">
+        <input type="text" id="nameInput" placeholder="Type a name e.g. Yusuf, Aisha..." autocomplete="off" />
+        <button id="searchBtn">✨ Reveal</button>
+        <div class="suggestions" id="suggestions"></div>
+      </div>
+      <div class="stats-row">
+        <span>🕌 Verified Islamic references</span>
+        <span>🌍 Global names</span>
+      </div>
+    </div>
+
+    <div class="theme-picker">
+      <div class="theme-picker-label">🎨 Choose a card theme</div>
+      <div class="theme-swatches" id="themeSwatches"></div>
+    </div>
+
+    <div id="status"></div>
+    <div class="spinner-wrap" id="spinnerWrap">
+      <div class="spinner"></div>
+      <span>Revealing your name's story...</span>
+    </div>
+
+    <div class="card-wrap" id="cardWrap">
+      <img id="card-preview" alt="Ismara result" />
+    </div>
+
+    <div class="actions" id="actions">
+      <button class="download-btn" id="downloadBtn">⬇ Download</button>
+      <button class="share-btn" id="shareBtn">↗ Share</button>
+    </div>
+
+    <footer>Built with love for the Ummah · Ismara</footer>
+  </div>
+
+  <!-- decorative floating particles -->
+  <div class="particle" style="width:16px;height:16px;background:var(--gold);top:10%;left:8%;animation-delay:0s;"></div>
+  <div class="particle" style="width:10px;height:10px;background:var(--rose);top:70%;left:85%;animation-delay:2s;"></div>
+  <div class="particle" style="width:14px;height:14px;background:var(--plum);top:25%;left:90%;animation-delay:4s;"></div>
+  <div class="particle" style="width:8px;height:8px;background:var(--gold-soft);top:85%;left:12%;animation-delay:1s;"></div>
+  <div class="particle" style="width:12px;height:12px;background:var(--amber);top:45%;left:5%;animation-delay:3s;"></div>
+
+<script>
+  const API_BASE = "http://localhost:8000";
+
+  const nameInput = document.getElementById("nameInput");
+  const searchBtn = document.getElementById("searchBtn");
+  const statusEl = document.getElementById("status");
+  const spinnerWrap = document.getElementById("spinnerWrap");
+  const cardImg = document.getElementById("card-preview");
+  const cardWrap = document.getElementById("cardWrap");
+  const actions = document.getElementById("actions");
+  const downloadBtn = document.getElementById("downloadBtn");
+  const shareBtn = document.getElementById("shareBtn");
+  const suggestionsBox = document.getElementById("suggestions");
+
+  let currentBlobUrl = null;
+  let currentName = "";
+  let debounceTimer = null;
+  let activeSuggestionIndex = -1;
+  let selectedTheme = localStorage.getItem("ismara_theme") || "turquoise";
+
+  // ---------- Theme selector ----------
+  const themeSwatchesEl = document.getElementById("themeSwatches");
+
+  function applyThemeToPage(colors) {
+    const root = document.documentElement.style;
+    root.setProperty("--gold", colors.gold);
+    root.setProperty("--gold-soft", colors.cream);
+    root.setProperty("--rose", colors.rose);
+    root.setProperty("--amber", colors.rose);
+    root.setProperty("--cream", colors.cream);
+    root.setProperty("--bg-a", colors.bgTop);
+    root.setProperty("--bg-b", colors.bgMid);
+    root.setProperty("--bg-c", colors.rose);
+    root.setProperty("--bg-d", colors.bgBottom);
+  }
+
+  async function loadThemes() {
+    try {
+      const res = await fetch(`${API_BASE}/api/themes`);
+      const data = await res.json();
+      if (!selectedTheme) selectedTheme = data.default;
+
+      themeSwatchesEl.innerHTML = data.themes.map(t => `
+        <div class="theme-swatch ${t.key === selectedTheme ? 'active' : ''}"
+             data-key="${t.key}"
+             data-colors='${JSON.stringify(t.colors)}'
+             title="${t.label}"
+             style="background: linear-gradient(135deg, ${t.colors.bgTop}, ${t.colors.bgMid}, ${t.colors.gold});">
+        </div>
+      `).join("");
+
+      // Apply the saved/default theme to the page on load
+      const activeThemeData = data.themes.find(t => t.key === selectedTheme);
+      if (activeThemeData) applyThemeToPage(activeThemeData.colors);
+
+      themeSwatchesEl.querySelectorAll(".theme-swatch").forEach(el => {
+        el.addEventListener("click", () => {
+          themeSwatchesEl.querySelectorAll(".theme-swatch").forEach(s => s.classList.remove("active"));
+          el.classList.add("active");
+          selectedTheme = el.dataset.key;
+          localStorage.setItem("ismara_theme", selectedTheme);
+          applyThemeToPage(JSON.parse(el.dataset.colors));
+          // Re-fetch the card in the new theme if one is already showing
+          if (currentName) searchName(currentName);
+        });
+      });
+    } catch (err) {
+      console.error("Failed to load themes:", err);
+    }
+  }
+  loadThemes();
+
+  // ---------- Live name-count badge ----------
+  const statsBadge = document.getElementById("statsBadge");
+  function formatCount(n) {
+    if (n >= 1000) {
+      const rounded = Math.floor(n / 1000) * 1000;
+      return `${rounded.toLocaleString()}+`;
+    }
+    return `${n}`;
+  }
+  fetch(`${API_BASE}/api/health`)
+    .then(res => res.json())
+    .then(data => {
+      const count = data.names_loaded || 0;
+      statsBadge.textContent = `✨ ${formatCount(count)} names & meanings`;
+    })
+    .catch(() => {
+      statsBadge.textContent = `✨ Names & meanings`;
+    });
+
+  // ---------- Autocomplete ----------
+  async function fetchSuggestions(q) {
+    if (!q.trim()) { hideSuggestions(); return; }
+    try {
+      const res = await fetch(`${API_BASE}/api/suggest?q=${encodeURIComponent(q)}&limit=8`);
+      const data = await res.json();
+      renderSuggestions(data.suggestions || []);
+    } catch (err) {
+      hideSuggestions();
+    }
+  }
+
+  function renderSuggestions(list) {
+    if (!list.length) { hideSuggestions(); return; }
+    suggestionsBox.innerHTML = list.map((n, i) =>
+      `<div class="suggestion-item" data-index="${i}">${n}</div>`
+    ).join("");
+    suggestionsBox.classList.add("show");
+    activeSuggestionIndex = -1;
+
+    suggestionsBox.querySelectorAll(".suggestion-item").forEach(el => {
+      el.addEventListener("click", () => {
+        nameInput.value = el.textContent;
+        hideSuggestions();
+        searchName(el.textContent);
+      });
+    });
+  }
+
+  function hideSuggestions() {
+    suggestionsBox.classList.remove("show");
+    suggestionsBox.innerHTML = "";
+    activeSuggestionIndex = -1;
+  }
+
+  nameInput.addEventListener("input", () => {
+    clearTimeout(debounceTimer);
+    const val = nameInput.value;
+    debounceTimer = setTimeout(() => fetchSuggestions(val), 200);
+  });
+
+  nameInput.addEventListener("keydown", (e) => {
+    const items = suggestionsBox.querySelectorAll(".suggestion-item");
+    if (e.key === "ArrowDown" && items.length) {
+      e.preventDefault();
+      activeSuggestionIndex = (activeSuggestionIndex + 1) % items.length;
+      updateActiveSuggestion(items);
+    } else if (e.key === "ArrowUp" && items.length) {
+      e.preventDefault();
+      activeSuggestionIndex = (activeSuggestionIndex - 1 + items.length) % items.length;
+      updateActiveSuggestion(items);
+    } else if (e.key === "Enter") {
+      if (activeSuggestionIndex >= 0 && items[activeSuggestionIndex]) {
+        nameInput.value = items[activeSuggestionIndex].textContent;
+      }
+      hideSuggestions();
+      searchName(nameInput.value);
+    } else if (e.key === "Escape") {
+      hideSuggestions();
+    }
+  });
+
+  function updateActiveSuggestion(items) {
+    items.forEach(el => el.classList.remove("active"));
+    if (items[activeSuggestionIndex]) {
+      items[activeSuggestionIndex].classList.add("active");
+      nameInput.value = items[activeSuggestionIndex].textContent;
+    }
+  }
+
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest(".search-box")) hideSuggestions();
+  });
+
+  // ---------- Search & card generation ----------
+  async function searchName(name) {
+    if (!name.trim()) return;
+    hideSuggestions();
+
+    statusEl.textContent = "";
+    cardWrap.classList.remove("show");
+    actions.classList.remove("show");
+    spinnerWrap.classList.add("show");
+    searchBtn.disabled = true;
+
+    try {
+      const lookupRes = await fetch(`${API_BASE}/api/lookup?name=${encodeURIComponent(name)}`);
+      const data = await lookupRes.json();
+
+      if (!data.name) {
+        statusEl.textContent = `No match found for "${name}". Try another spelling.`;
+        spinnerWrap.classList.remove("show");
+        searchBtn.disabled = false;
+        return;
+      }
+
+      if (!data.matched && data.suggestion) {
+        statusEl.innerHTML = `Showing closest match: <span class="suggestion-hint">${data.name}</span>`;
+      } else {
+        statusEl.textContent = "";
+      }
+
+      const cardRes = await fetch(`${API_BASE}/api/card?name=${encodeURIComponent(data.name)}&theme=${encodeURIComponent(selectedTheme)}`);
+      const blob = await cardRes.blob();
+      if (currentBlobUrl) URL.revokeObjectURL(currentBlobUrl);
+      currentBlobUrl = URL.createObjectURL(blob);
+      currentName = data.name;
+
+      cardImg.src = currentBlobUrl;
+      cardWrap.classList.add("show");
+      actions.classList.add("show");
+    } catch (err) {
+      statusEl.textContent = "Something went wrong. Is the backend running?";
+      console.error(err);
+    } finally {
+      spinnerWrap.classList.remove("show");
+      searchBtn.disabled = false;
+    }
+  }
+
+  searchBtn.addEventListener("click", () => searchName(nameInput.value));
+
+  downloadBtn.addEventListener("click", () => {
+    if (!currentBlobUrl) return;
+    const a = document.createElement("a");
+    a.href = currentBlobUrl;
+    a.download = `${currentName}_ismara_card.png`;
+    a.click();
+  });
+
+  shareBtn.addEventListener("click", async () => {
+    if (!currentBlobUrl) return;
+    try {
+      const blob = await (await fetch(currentBlobUrl)).blob();
+      const file = new File([blob], `${currentName}_ismara_card.png`, { type: "image/png" });
+      if (navigator.canShare && navigator.canShare({ files: [file] })) {
+        await navigator.share({
+          files: [file],
+          title: "Ismara",
+          text: `Check out the meaning behind the name ${currentName}!`,
+        });
+      } else {
+        alert("Sharing not supported on this browser — use Download instead.");
+      }
+    } catch (err) {
+      console.error(err);
+    }
+  });
+</script>
+</body>
+</html>
